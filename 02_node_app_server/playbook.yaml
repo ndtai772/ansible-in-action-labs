@@ -1,0 +1,36 @@
+---
+- hosts: app
+  become: true
+
+  vars:
+    node_apps_location: /usr/local/opt/node
+  
+  tasks:
+    - name: Install nodejs and npm
+      apt:
+        name: npm
+        state: present
+    - name: Install Forever
+      npm:
+        name: forever
+        global: true
+        state:  present
+    - name: Ensure Node.js app folder exists.
+      file:
+        path: "{{node_apps_location}}"
+        state: directory
+    - name: Copy example Node.js app to server.
+      copy:
+        src: app
+        dest: "{{node_apps_location}}"
+    - name: Install app dependences defined in package.json
+      npm:
+        path: "{{node_apps_location}}/app"
+    - name: Check list of running Node.js app
+      command: forever list
+      register: forever_list
+      changed_when: false
+    - name: Start example Node.js app
+      command: |
+        forever start {{node_apps_location}}/app/app.js
+      when: "forever_list.stdout.find(node_apps_location + '/app/app.js') == -1"
