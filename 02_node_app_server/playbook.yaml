@@ -23,7 +23,7 @@
       copy:
         src: app
         dest: "{{node_apps_location}}"
-    - name: Install app dependences defined in package.json
+    - name: Install app dependencies defined in package.json
       npm:
         path: "{{node_apps_location}}/app"
     - name: Check list of running Node.js app
