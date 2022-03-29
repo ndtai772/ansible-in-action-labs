@@ -1,0 +1,24 @@
+---
+- hosts: localhost
+  gather_facts: no
+
+  tasks:
+    - name: Check current system date
+      command: date
+      register: date
+      changed_when: false
+    
+    - name: Print current system date
+      debug:
+        var: date.stdout
+    - name: custom
+      block:
+        - name: Get hosts file
+          command: cat /etc/hosts
+          register: hosts
+        - name: Show hosts file
+          debug:
+            var: hosts.stdout
+      rescue:
+        - name: Recuse the failed block
+          debug: {var: hosts}
