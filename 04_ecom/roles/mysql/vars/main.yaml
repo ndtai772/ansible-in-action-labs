@@ -1,0 +1,4 @@
+---
+mysql_db: ecom
+mysql_user: magento
+mysql_password: magento

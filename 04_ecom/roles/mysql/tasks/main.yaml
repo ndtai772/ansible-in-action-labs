@@ -1,0 +1,29 @@
+---
+- name: Install Mysql server
+  ansible.builtin.apt:
+    name: "{{item}}"
+    state: present
+  loop:
+    - python3-mysqldb
+    - mysql-server
+
+- name: Create mysql db
+  community.mysql.mysql_db:
+    name: "{{mysql_db}}"
+    state: present
+
+- name: Create Mysql user
+  community.mysql.mysql_user:
+    name: "{{mysql_user}}"
+    password: "{{mysql_password}}"
+    priv: "{{mysql_db}}.*:ALL"
+    host: "%"
+    state: present
+
+- name: Enable external access on Mysql
+  ansible.builtin.lineinfile:
+    path: /etc/mysql/mysql.conf.d/mysqld.cnf
+    regexp: ^bind-address(.*)$
+    line: "bind-address = 0.0.0.0"
+    backrefs: true
+  notify: restart mysql
